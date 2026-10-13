@@ -19,7 +19,7 @@ jobs:
           which xcodegen || echo 'xcodegen not installed yet (the build script installs it)'
           ls
       - name: Build unsigned IPA
-        run: UNSIGNED=1 ./scripts/build_ipa.sh
+       run: UNSIGNED=1 bash scripts/build_ipa.sh
       - uses: actions/upload-artifact@v5
         with:
           name: BP-unsigned-ipa

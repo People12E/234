@@ -1,0 +1,33 @@
+# Builds an UNSIGNED .ipa on a GitHub-hosted Mac (no secrets needed). Download it from the run's Artifacts,
+# then sign it with AltStore / Sideloadly / your own certificate.
+name: Build IPA
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app || true
+      - name: Environment
+        run: |
+          xcodebuild -version
+          python3 --version
+          which xcodegen || echo 'xcodegen not installed yet (the build script installs it)'
+          ls
+      - name: Build unsigned IPA
+        run: UNSIGNED=1 ./scripts/build_ipa.sh
+      - uses: actions/upload-artifact@v5
+        with:
+          name: BP-unsigned-ipa
+          path: build/BP-unsigned.ipa
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: build-log
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
